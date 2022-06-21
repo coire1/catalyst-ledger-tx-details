@@ -1,5 +1,6 @@
 # Extract MIR txs
 
+```
 Usage: tx-details.py [OPTIONS]
 
 Options:
@@ -11,3 +12,4 @@ Options:
   --blockfrost-api-key TEXT       A blockfrost API key
   --output TEXT                   The path to save the output CSV  [default:
                                   output.csv]
+```
