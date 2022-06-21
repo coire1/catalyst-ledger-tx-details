@@ -1,5 +1,11 @@
 # Extract MIR txs
 
+Install deps:
+
+`pip install -r requirements.txt`
+
+Command help:
+
 ```
 Usage: tx-details.py [OPTIONS]
 
