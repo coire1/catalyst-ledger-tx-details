@@ -1,4 +1,4 @@
-# Extract MIR txs
+# Extract txs amounts
 
 Install deps:
 
