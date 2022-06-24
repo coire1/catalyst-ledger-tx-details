@@ -18,4 +18,6 @@ Options:
   --blockfrost-api-key TEXT       A blockfrost API key
   --output TEXT                   The path to save the output CSV  [default:
                                   output.csv]
+  --mir / --no-mir                Look for MIRs instead of UTXOs  [default:
+                                  False]
 ```
