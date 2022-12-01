@@ -87,6 +87,3 @@ def get_txs(address, headers, block_from, block_to, page):
     except Exception as e:
         print(e)
     return txs
-
-if __name__ == "__main__":
-    app()

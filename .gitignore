@@ -1,3 +1,6 @@
 output.csv
 meta/
 test-tx-dapp/
+google-accounts/
+__pycache__
+.env

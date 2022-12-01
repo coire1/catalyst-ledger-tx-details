@@ -138,8 +138,3 @@ def format_results(results):
             formatted['confirmation_tx'] = "\n".join(results[key]['confirmation_tx'])
         formatted_results.append(formatted)
     return formatted_results
-
-
-
-if __name__ == "__main__":
-    app()
