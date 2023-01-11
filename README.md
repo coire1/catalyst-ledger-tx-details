@@ -36,6 +36,8 @@ Options ────────────────────────
   --integrity-col             TEXT  The col to update with the integrity result. [default: I]
   --blockfrost-api-key        TEXT  A blockfrost API key
   --network                   TEXT  Cardano network [default: mainnet]
+  --dry-run    --no-dry-run         When True it doesn't write the results on the sheet.                 │
+                                    [default: no-dry-run]
 ```
 
 Example usage:

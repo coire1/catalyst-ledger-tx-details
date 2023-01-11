@@ -20,6 +20,7 @@ def check(
     integrity_col: str = typer.Option("I", help="The col to update with the integrity result."),
     blockfrost_api_key: str = typer.Option("", help="A blockfrost API key"),
     network: str = typer.Option("mainnet", help="Cardano network"),
+    dry_run: bool = typer.Option(False, help="When True it doesn't write the results on the sheet.")
 ):
     headers = {
         "project_id": blockfrost_api_key
@@ -41,7 +42,7 @@ def check(
             all_outputs = all_outputs + outputs
 
     for idx, proposal in funding_file.iterrows():
-        proposal_address = proposal[0]
+        proposal_address = proposal[0].strip()
         if proposal_address != '':
             tot = tot + 1
             proposal_amount = int(proposal['lovelace to send'])
@@ -50,10 +51,9 @@ def check(
                 tx_fragment[0]['checked'] = True
                 print(f"Amount distributed for [bold green]{proposal['Idea']}[/bold green] is correct ([bold green]{tx_fragment[0]['quantity']}[/bold green]).")
             else:
-                print(tx_fragment)
                 print(f"Amount distributed for [bold red]{proposal['Idea']} is NOT correct[/bold red]")
     final = final_check(all_outputs, all_inputs, tot)
-    if final:
+    if final and (dry_run is False):
         print("Updating fund ledger...")
         ledger_df, ledger_sheet = gsheet.get_df(ledger_sheet_url, ledger_sheet_name, return_sheet=True)
         affected_rows = ledger_df[ledger_df['Tx ID'].isin(tx_ids)].index.tolist()
