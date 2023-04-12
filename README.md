@@ -32,12 +32,14 @@ Options ────────────────────────
   --sheet-name                TEXT  The sheet name of the funding file.
   --ledger-sheet-url          TEXT  The URL to use to store the integrity result.
   --ledger-sheet-name         TEXT  The sheet name of the integrity result.
-  --tx-id-col                 TEXT  The cell with the TX id. [default: K]
+  --tx-id-col                 TEXT  The col with the TX ids. [default: K]
+  --description-col           TEXT  The col that will be used as description in log. [default: E]
   --integrity-col             TEXT  The col to update with the integrity result. [default: I]
   --blockfrost-api-key        TEXT  A blockfrost API key
   --network                   TEXT  Cardano network [default: mainnet]
-  --dry-run    --no-dry-run         When True it doesn't write the results on the sheet.                 │
+  --dry-run    --no-dry-run         When True it doesn't write the results on the sheet. 
                                     [default: no-dry-run]
+  --seed-account-addresses    TEXT  The addresses of the seed account. (If not specified it took the addresses of the input of the tx. Multiple addresses can be specified)
 ```
 
 Example usage:

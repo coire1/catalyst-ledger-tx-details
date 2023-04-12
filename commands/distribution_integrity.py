@@ -18,7 +18,8 @@ def check(
     sheet_name: str = typer.Option("", help="The sheet name of the funding file."),
     ledger_sheet_url: str = typer.Option("", help="The URL to use to store the integrity result."),
     ledger_sheet_name: str = typer.Option("", help="The sheet name of the integrity result."),
-    tx_id_col: str = typer.Option("K", help="The cell with the TX id."),
+    tx_id_col: str = typer.Option("K", help="The col with the TX ids."),
+    description_col: str = typer.Option("E", help="The col (as a letter) used as description for the entry (e.g. Idea, Challenge Team)"),
     integrity_col: str = typer.Option("I", help="The col to update with the integrity result."),
     blockfrost_api_key: str = typer.Option("", help="A blockfrost API key"),
     network: str = typer.Option("mainnet", help="Cardano network"),
@@ -30,6 +31,8 @@ def check(
     }
 
     funding_file, sheet = gsheet.get_df(sheet_url, sheet_name, return_sheet=True)
+
+    description_header = sheet.acell(f"{description_col}1").value
 
     tx_ids = sheet.get(f"{tx_id_col}2:{tx_id_col}")
     tx_ids = [tx[0].strip() for tx in tx_ids]
@@ -52,9 +55,9 @@ def check(
             tx_fragment = find_by_address_and_amount(all_outputs, proposal_address, proposal_amount)
             if len(tx_fragment) > 0:
                 tx_fragment[0]['checked'] = True
-                print(f"Amount distributed for [bold green]{proposal['Idea']}[/bold green] is correct ([bold green]{tx_fragment[0]['quantity']}[/bold green]).")
+                print(f"Amount distributed for [bold green]{proposal[description_header]}[/bold green] is correct ([bold green]{tx_fragment[0]['quantity']}[/bold green]).")
             else:
-                print(f"Amount distributed for [bold red]{proposal['Idea']} is NOT correct[/bold red]")
+                print(f"Amount distributed for [bold red]{proposal[description_header]} is NOT correct[/bold red]")
     final = final_check(all_outputs, all_inputs, tot, seed_account_addresses)
     if final and (dry_run is False):
         print("Updating fund ledger...")
