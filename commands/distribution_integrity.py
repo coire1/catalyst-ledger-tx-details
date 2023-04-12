@@ -6,6 +6,8 @@ import csv
 
 from rich import print
 
+from typing import List
+
 app = typer.Typer()
 
 gsheet = GSheet()
@@ -20,7 +22,8 @@ def check(
     integrity_col: str = typer.Option("I", help="The col to update with the integrity result."),
     blockfrost_api_key: str = typer.Option("", help="A blockfrost API key"),
     network: str = typer.Option("mainnet", help="Cardano network"),
-    dry_run: bool = typer.Option(False, help="When True it doesn't write the results on the sheet.")
+    dry_run: bool = typer.Option(False, help="When True it doesn't write the results on the sheet."),
+    seed_account_addresses: List[str] = typer.Option([], help="The addresses of the seed account.")
 ):
     headers = {
         "project_id": blockfrost_api_key
@@ -52,7 +55,7 @@ def check(
                 print(f"Amount distributed for [bold green]{proposal['Idea']}[/bold green] is correct ([bold green]{tx_fragment[0]['quantity']}[/bold green]).")
             else:
                 print(f"Amount distributed for [bold red]{proposal['Idea']} is NOT correct[/bold red]")
-    final = final_check(all_outputs, all_inputs, tot)
+    final = final_check(all_outputs, all_inputs, tot, seed_account_addresses)
     if final and (dry_run is False):
         print("Updating fund ledger...")
         ledger_df, ledger_sheet = gsheet.get_df(ledger_sheet_url, ledger_sheet_name, return_sheet=True)
@@ -99,15 +102,29 @@ def extract_lovelace_amount(q):
         'checked': False
     }
 
-def final_check(outputs, inputs, tot):
+def check_address_inputs(inputs, not_checked):
+    '''
+    Check that every address in not checked is part of inputs list.
+    '''
+    result = True
+    for single_not_checked in not_checked:
+        result = result and (single_not_checked['address'] in inputs)
+    return result
+
+
+def final_check(outputs, inputs, tot, seed_addresses):
     not_checked = [el for el in outputs if el['checked'] != True]
+    if (len(seed_addresses) > 0):
+        reduced_inputs = seed_addresses
+    else:
+        reduced_inputs = set([el['address'] for el in inputs])
     if (
-        len(not_checked) == len(inputs) and
-        (not_checked[0]['address'] == inputs[0]['address']) and
-        len(outputs) - len(inputs) == tot
+        len(not_checked) == len(reduced_inputs) and
+        check_address_inputs(reduced_inputs, not_checked) and
+        len(outputs) - len(reduced_inputs) == tot
     ):
-        print(f"No of outputs correct.[bold green] Fund distributed to {len(outputs) - len(inputs)} wallets[/bold green].")
+        print(f"No of outputs correct.[bold green] Fund distributed to {len(outputs) - len(reduced_inputs)} wallets[/bold green].")
         return True
     else:
-        print(f"[bold red]No of outputs not correct. Fund distributed to {len(outputs) - len(inputs)} wallets[/bold red].")
+        print(f"[bold red]No of outputs not correct. Fund distributed to {len(outputs) - len(reduced_inputs)} wallets[/bold red].")
         return False
